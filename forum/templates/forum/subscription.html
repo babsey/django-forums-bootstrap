@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% load webapp_tags %}
+
+{% block title %}Discussions &raquo; Subscriptions{% endblock %}
+
+{% block page-header %}Subscriptions{% endblock %}
+
+{% block content %}
+    <table class="subscription table table-hover">
+        <thead>
+            <tr>
+                <th class="date">Date</th>
+                <th class="topic">Topic</th>
+                <th class="forum">Forum</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for subscription in subscription_list.object_list %}
+            <tr>
+                <td class="date">
+                    {{ subscription.date|date:"DATE_FORMAT" }}
+                </td>
+
+                <td class="topic">
+                {% if subscription.content_type.model == "topic" %}
+                    <a href="{{ subscription.content_object.get_absolute_url }}">{{ subscription.content_object }}</a>
+                {% else %}
+                    &nbsp;
+                {% endif %}
+                </td>
+
+                <td class="forum">
+                {% if subscription.content_type.model == "topic" %}
+                    <a href="{{ subscription.content_object.forum.get_absolute_url }}">{{ subscription.content_object.forum }}</a>
+                {% else %}
+                    <a href="{{ subscription.content_object.get_absolute_url }}">{{ subscription.content_object }}</a>
+                {% endif %}
+                </td>
+
+                <td>
+                {% if subscription.content_type.model == "topic" %}
+                    <a href="{% url 'subscribe_topic' subscription.content_object.id %}">Unsubscribe</a>
+                {% else %}
+                    <a href="{% url 'subscribe_forum' subscription.content_object.id %}">Unsubscribe</a>
+                {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+            <td class="empty">
+                You have no subscriptions
+            </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    {% pagination subscription_list "subscription" %}
+{% endblock %}

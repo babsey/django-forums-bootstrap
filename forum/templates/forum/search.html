@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+{% load webapp_tags %}
+{% load forum_tags %}
+{% load forum_filters %}
+{% load humanize %}
+
+{% block title %}Discussions &raquo; Search{% endblock %}
+
+{% block page-header %}Search results{% endblock %}
+
+{% block content %}
+<nav>
+<div class="forum_search">
+    <form action="{% url 'search' %}" method="get" class="form-search form-inline">
+        {{ search_form.non_field_errors }}
+        {{ search_form|crispy }}
+        <button class="btn btn-default" type="submit" >Search</button>
+    </form>
+</div>
+</nav>
+
+<div id="search_results">
+
+    <div class="posts post-striped">
+        {% for post in post_list.object_list %}
+        {% ifchanged %}
+            <h3 class="page-header">{{ post.topic }}</h3>
+        {% endifchanged %}
+        <div class="post">
+
+            <div class="date">
+                {{ post.date|timesince }} ago
+            </div>
+
+            <div class="profile row col-lg-2 col-md-2 col-sm-2">
+                <div class="username col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                    <a href="#" class="insert_username" title="Insert username in the new post form">{{ post.profile.user.get_full_name }}</a>
+                </div>
+
+                <div class="status col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                    <span class="member_{{ post.profile.forum_group.slug }}">{{ post.profile.forum_group.member_title }}</span>
+                </div>
+
+                <div class="counts col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                    Posts count: {{ post.profile.post_count|intcomma }}
+                </div>
+
+                <div class="links col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                    <a href="{{ post.profile.get_absolute_url }}" title="Go to profile">Profile</a>
+                </div>
+            </div>
+
+            <div class="body col-lg-10 col-md-10 col-sm-10">
+                {{ post.message_html|highlight:search_term|safe }}
+
+                <div class="actions">
+                    <a href="{{ post.get_absolute_url }}" title="Permanent link">Link</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+            <div class="empty">
+                No posts met your search criteria
+            </div>
+        {% endfor %}
+    </div>
+
+    {% pagination post_list "post" search_term %}
+</div>
+{% endblock %}
+
+{% block extrascript %}
+<script type="text/javascript" language="javascript">
+$(document).ready(function(){
+    // Hidden text collapse toggle
+    $('.hidden-header').on('click', function(e){
+        $(this).next('.hidden-text').toggle();
+    });
+});
+</script>
+{% endblock %}

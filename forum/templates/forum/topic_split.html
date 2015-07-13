@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% load humanize %}
+{% load forum_tags %}
+
+{% block title %}Discussions &raquo; {{ forum.name }} &raquo; Split topic{% endblock %}
+
+{% block page-header %}Split topic{% endblock %}
+
+{% block content %}
+    <form action="." method="post" class="form-horizontal" id="split_topic_form">
+        {% csrf_token %}
+        {{ topic_form.non_field_errors }}
+
+        <div class="control-group">
+            <label class="control-label" for="id_name">New topic name:</label>
+            <div class="controls">
+                {{ topic_form.name.errors }}
+                {{ topic_form.name }}
+            </div>
+        </div>
+
+        <strong>Check posts to move to the new topic:</strong>
+        <hr>
+
+        {% for id, post in topic_form.fields.posts.choices %}
+            <div class="post row">
+                <div class="col-lg-1 col-md-1 col-sm-1">
+                    <input type="checkbox" name="posts" value="{{ id }}" />
+                </div>
+
+                <div class="profile col-lg-2 col-md-2 col-sm-2">
+                    <div class="username col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                        <a href="#" class="insert_username">{{ post.profile.user.get_full_name }}</a>
+                    </div>
+
+                    <div class="status col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                        <span class="member_{{ post.profile.forum_group.slug }}">{{ post.profile.forum_group.member_title }}</span>
+                    </div>
+
+                    <div class="counts col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                        Posts count: {{ post.profile.post_count|intcomma }}
+                    </div>
+
+                    <div class="links col-lg-12 col-md-12 col-sm-12 col-xs-3">
+                        <a href="{{ post.profile.get_absolute_url }}" title="Go to profile">Profile</a>
+                    </div>
+                </div>
+
+                <div class="date">{{ post.date|timesince }} ago</div>
+
+                <div class="body col-lg-9 col-md-9 col-sm-9">
+                    {{ post.message_html|safe }}
+                </div>
+
+            </div>
+            {% if not forloop.last %}<hr>{% endif %}
+        {% endfor %}
+
+        <div class="buttons">
+            <button type="submit" class="btn btn-default">Split topic</button>
+        </div>
+    </form>
+{% endblock %}
