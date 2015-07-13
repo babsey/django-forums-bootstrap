@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Registration{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="page-header">Registration</h2>
+
+    <div class="row">
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-1">
+        </div>
+        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-10">
+            {% crispy user_form %}
+        </div>
+
+        <!-- <div class="col-lg-6">
+            <form action="." method="post" class="form-horizontal" id="user-registration-form">
+                {% csrf_token %}
+                {{ user_form.non_field_errors }}
+                {{ user_form|crispy }}
+                <button role="button" type="submit" class="btn btn-default">Save</button>
+            </form>
+        </div> -->
+    </div>
+</div>
+{% endblock %}

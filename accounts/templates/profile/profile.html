@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.user.get_full_name }} &raquo; User profile{% endblock %}
+
+{% block css %}
+<style>
+/*.dl-horizontal dt {
+    width: 240px;
+}
+
+.dl-horizontal dd {
+    margin-left: 260px;
+    margin-bottom: 10px;
+}*/
+</style>
+{% endblock %}
+
+{% block page-header %}{{ profile.user.get_full_name }}{% endblock %}
+
+
+{% block content %}
+    <dl class="dl-horizontal">
+        {% if user == profile.user %}
+        <dt>Username</dt>
+        <dd>{{ profile.user.username }}</dd>
+
+        <dt>E-mail address</dt>
+        <dd>{{ profile.user.email|urlize }}</dd>
+        {% endif %}
+
+        <dt>Public e-mail address</dt>
+        <dd>{{ profile.public_email|urlize|default:"&mdash;" }}</dd>
+
+        <dt>Publicly visible web page address</dt>
+        <dd>{{ profile.web_page|urlize|default:"&mdash;" }}</dd>
+
+        <dt>Miscellaneous notes (bio)</dt>
+        <dd>{{ profile.notes|default:"&mdash;" }}</dd>
+
+        <dt>Post count</dt>
+        <dd>{{ profile.post_count }}</dd>
+
+    </dl>
+
+    {% if user == profile.user %}
+    <div class="btn-group" role="group">
+        <a role="button" class="btn btn-default" href="{% url 'profile_edit' profile.id %}">Edit profile</a>
+        <a role="button" class="btn btn-default" href="{% url 'password_change' %}">Change password</a>
+        <a role="button" class="btn btn-default" href="{% url 'forum_subscription' %}">Forum subscriptions</a>
+    </div>
+    {% endif %}
+
+
+    <h4> Posts</h4>
+    <dl class="dl-horizontal">
+
+        {% for post in profile.post_set.all %}
+            <dt>{{ post.date }}</dt>
+            <dd>{{ post.message_html }}</dd>
+        {% endfor%}
+    </dl>
+{% endblock %}
